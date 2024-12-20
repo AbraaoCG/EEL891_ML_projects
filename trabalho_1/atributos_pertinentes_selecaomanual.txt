@@ -1,0 +1,15 @@
+atributos com maior discrepância (analise visual)
+
+idade 1
+valor patrimonial 4
+renda extra 4
+produto solicitado 1
+possui telefone residencial 2
+possui outros cartões 1
+mastercard 1
+possui carro 1
+meses no trabalho 4
+estado civil 2
+dia de vencimento 2
+código área telefone residencial 2
+ocupacao 2
