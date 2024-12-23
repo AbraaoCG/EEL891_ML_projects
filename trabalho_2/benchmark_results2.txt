@@ -1,0 +1,4 @@
+Model	Best_Params	MSE	Cross_Val_MSE
+SVR	{'kernel': 'linear', 'epsilon': 0.5, 'C': 100}	74117738007.32721	71598830106.60777
+GradientBoostingRegressor	{'subsample': 0.9, 'n_estimators': 300, 'max_depth': 7, 'learning_rate': 0.01}	33849834594.69945	36274680373.04691
+AdaBoostRegressor	{'n_estimators': 50, 'learning_rate': 0.05}	47199648598.38238	47662557781.89744

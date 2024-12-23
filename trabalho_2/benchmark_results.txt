@@ -1,0 +1,20 @@
+Model	Best_Params	MSE	Cross_Val_MSE
+SVR	{'kernel': 'linear', 'epsilon': 0.5, 'C': 100}	74117738007.32721	71598830106.60777
+GradientBoostingRegressor	{'subsample': 0.9, 'n_estimators': 300, 'max_depth': 7, 'learning_rate': 0.01}	33849834594.69945	36274680373.04691
+AdaBoostRegressor	{'n_estimators': 50, 'learning_rate': 0.05}	47199648598.38238	47662557781.89744
+MLPRegressor	{'solver': 'sgd', 'learning_rate': 'constant', 'hidden_layer_sizes': (100,), 'alpha': 0.0001, 'activation': 'tanh'}	43123911916.804565	45924575824.90526
+TheilSenRegressor	{'n_subsamples': None, 'max_subpopulation': 1000.0, 'fit_intercept': True}	129197520336.01274	83873291679.74295
+RANSACRegressor	{'residual_threshold': None, 'min_samples': 0.9, 'is_model_valid': None, 'is_data_valid': None}	88701971240.04419	61724203530.64305
+PassiveAggressiveRegressor	{'tol': 0.001, 'max_iter': 1000, 'fit_intercept': True, 'C': 1.0}	100001230513.47562	63333713598.56825
+Ridge	{'solver': 'lsqr', 'fit_intercept': True, 'alpha': 10.0}	65261418425.80343	55439567511.6558
+Lasso	{'max_iter': 1000, 'fit_intercept': True, 'alpha': 0.1}	65317291685.92393	55441004770.37738
+LassoLars	{'fit_intercept': True, 'alpha': 0.1}	65317291685.923935	55441004773.91282
+Lars	{'n_nonzero_coefs': 500, 'fit_intercept': True}	65317285813.95771	55441003335.43252
+ElasticNet	{'l1_ratio': 0.9, 'fit_intercept': True, 'alpha': 0.1}	65096391685.57231	55438974478.02501
+RandomForestRegressor	{'n_estimators': 500, 'min_samples_split': 10, 'min_samples_leaf': 2, 'max_depth': 10}	32782198333.495438	35219760110.08571
+DecisionTreeRegressor	{'min_samples_split': 10, 'min_samples_leaf': 2, 'max_depth': 10}	45413839896.60358	40360652394.31167
+XGBRegressor	{'n_estimators': 100, 'max_depth': 5, 'learning_rate': 0.1}	36722687841.97964	37352814450.78166
+KNeighborsRegressor	{'weights': 'distance', 'n_neighbors': 20, 'algorithm': 'brute'}	36437836499.30257	36397049501.11289
+ARDRegression	{'tol': 1e-05, 'lambda_2': 1e-06, 'lambda_1': 1e-06, 'alpha_2': 1e-06, 'alpha_1': 0.0001}	68014738519.89	55366355893.99955
+ExtraTreesRegressor	{'n_estimators': 100, 'min_samples_split': 10, 'min_samples_leaf': 2, 'max_depth': 20}	31007649781.82638	35522255370.59052
+BayesianRidge	{'tol': 0.001, 'lambda_2': 0.0001, 'lambda_1': 0.0001, 'alpha_2': 1e-06, 'alpha_1': 1e-06}	65292975577.94756	55440668529.64885

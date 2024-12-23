@@ -1,0 +1,62 @@
+'Linear Regression': LinearRegression(),
+    'Decision Tree': DecisionTreeRegressor(),
+    'Random Forest': RandomForestRegressor(),
+    'Gradient Boosting': GradientBoostingRegressor(),
+    'Support Vector Regressor': SVR(),
+    'AdaBoost Regressor': AdaBoostRegressor(),
+    'Extra Trees Regressor': ExtraTreesRegressor(),
+    'K-Neighbors Regressor': KNeighborsRegressor(),
+    'MLP Regressor': MLPRegressor(),
+    'XGBoost Regressor': XGBRegressor(),
+    'Lasso Regression': Lasso()
+
+
+                           Model  Test RMSPE  Mean RMSPE  Std RMSPE
+17                 MLP Regressor    0.586917    1.599333   1.718964
+8            Theil-Sen Regressor    0.784973    2.217417   3.283988
+9               RANSAC Regressor    0.545346    2.590236   4.299640
+7   Passive Aggressive Regressor    0.780475    3.669794   6.034002
+0               Ridge Regression    5.529490    4.847023   1.431710
+19              Lasso Regression    5.581675    4.899026   1.452835
+3                      LassoLars    5.581675    4.899026   1.452835
+2                           Lars    8.921924    5.052009   1.378699
+13      Support Vector Regressor    0.638749    5.569151   9.841785
+1                    Elastic Net    1.179872    6.133319   9.933933
+11                 Random Forest   17.650185    7.926596   6.425976
+10                 Decision Tree   41.561255    8.330689  12.327904
+18             XGBoost Regressor   17.655013    9.090630  12.454323
+4    Orthogonal Matching Pursuit    1.390332    9.770581  16.952515
+12             Gradient Boosting   27.340020   10.797428  11.316009
+16         K-Neighbors Regressor    8.939442   10.906643   3.831635
+6                 ARD Regression    1.633386   11.527615  19.979117
+15         Extra Trees Regressor   21.880488   11.548171  14.320926
+5                 Bayesian Ridge    1.633386   11.581942  19.950805
+14            AdaBoost Regressor   27.359688   13.041248  15.144662
+
+
+
+
+without outliers
+
+
+                           Model  Test RMSPE  Mean RMSPE  Std RMSPE
+18             XGBoost Regressor   11.794688    0.283798   0.018567
+9               RANSAC Regressor   13.621211    0.291194   0.024315
+11                 Random Forest   10.487827    0.300703   0.023300
+15         Extra Trees Regressor   11.440839    0.302794   0.015824
+8            Theil-Sen Regressor   10.085186    0.316646   0.016113
+12             Gradient Boosting   13.142187    0.325642   0.050429
+5                 Bayesian Ridge    9.390602    0.351014   0.037453
+0               Ridge Regression    9.385327    0.352155   0.038307
+19              Lasso Regression    9.385364    0.352208   0.038343
+3                      LassoLars    9.385365    0.352208   0.038343
+2                           Lars    9.385312    0.352209   0.038345
+6                 ARD Regression    9.512613    0.359618   0.022646
+1                    Elastic Net   10.900266    0.367014   0.031985
+16         K-Neighbors Regressor   14.378376    0.384156   0.020522
+7   Passive Aggressive Regressor   15.360534    0.404463   0.039741
+10                 Decision Tree    8.815867    0.413344   0.117076
+4    Orthogonal Matching Pursuit   15.571465    0.452878   0.028657
+13      Support Vector Regressor   25.039949    0.589708   0.017552
+14            AdaBoost Regressor   28.535421    0.764728   0.183170
+17                 MLP Regressor    5.437094    0.774525   0.017775

@@ -1,0 +1,68 @@
+MSE
+
+notebook / best (after fixing pca) --> 35,723,680,393.85
+
+
+Script
+
+146,865,123,576.11493
+82,241,659,828.01904 --> + High correlation
+53,373,191,459.386375 --> num_components = 0.95
+40,881,278,357.07649 --> quantile(0.03) ; quantile(0.97)
+33991036347.345966
+29,073,057,839.627388 --> Redução dos dados exagerada --> Metrica de erro de teste aumentou no kaggle.
+
+
+
+------------------------------------------
+MSE + CV - MSE
+
+
+t0.
+
+ RFE model = RandomForestRegressor(random_state=42,  n_estimators = 200, max_depth = 30, min_samples_split = 2,min_samples_leaf = 1)
+
+Mean Squared Error: 33991036347.345966
+Cross-validated Mean Squared Error: 37244290285.64232
+
+
+t1. 
+
+
+
+
+-----------------------------------------------
+benchmark
+                   Model                                        Best_Params           MSE  Cross_Val_MSE
+0  RandomForestRegressor  {'n_estimators': 100, 'min_samples_split': 5, ...  3.134237e+10   3.463304e+10
+1                  Lasso                   {'max_iter': 1000, 'alpha': 0.1}  6.531729e+10   5.544100e+10
+2    KNeighborsRegressor  {'weights': 'distance', 'n_neighbors': 11, 'al...  3.585098e+10   3.697834e+10
+3           XGBRegressor  {'subsample': 0.7, 'n_estimators': 300, 'max_d...  3.480610e+10   3.668709e+10
+4    ExtraTreesRegressor  {'n_estimators': 500, 'min_samples_split': 5, ...  3.112979e+10   3.530637e+10
+
+
+benchmark +++
+
+0                          SVR     {'kernel': 'linear', 'epsilon': 0.5, 'C': 100}  7.411774e+10   7.159883e+10
+1    GradientBoostingRegressor  {'subsample': 0.9, 'n_estimators': 300, 'max_d...  3.384983e+10   3.627468e+10
+2            AdaBoostRegressor        {'n_estimators': 50, 'learning_rate': 0.05}  4.719965e+10   4.766256e+10
+3                 MLPRegressor  {'solver': 'sgd', 'learning_rate': 'constant',...  4.312391e+10   4.592458e+10
+4            TheilSenRegressor  {'n_subsamples': None, 'max_subpopulation': 10...  1.291975e+11   8.387329e+10
+5              RANSACRegressor  {'residual_threshold': None, 'min_samples': 0....  8.870197e+10   6.172420e+10
+6   PassiveAggressiveRegressor  {'tol': 0.001, 'max_iter': 1000, 'fit_intercep...  1.000012e+11   6.333371e+10
+7                        Ridge  {'solver': 'lsqr', 'fit_intercept': True, 'alp...  6.526142e+10   5.543957e+10
+8                        Lasso  {'max_iter': 1000, 'fit_intercept': True, 'alp...  6.531729e+10   5.544100e+10
+9                    LassoLars              {'fit_intercept': True, 'alpha': 0.1}  6.531729e+10   5.544100e+10
+10                        Lars    {'n_nonzero_coefs': 500, 'fit_intercept': True}  6.531729e+10   5.544100e+10
+11                  ElasticNet  {'l1_ratio': 0.9, 'fit_intercept': True, 'alph...  6.509639e+10   5.543897e+10
+12       RandomForestRegressor  {'n_estimators': 500, 'min_samples_split': 10,...  3.278220e+10   3.521976e+10
+13       DecisionTreeRegressor  {'min_samples_split': 10, 'min_samples_leaf': ...  4.541384e+10   4.036065e+10
+14                XGBRegressor  {'n_estimators': 100, 'max_depth': 5, 'learnin...  3.672269e+10   3.735281e+10
+15         KNeighborsRegressor  {'weights': 'distance', 'n_neighbors': 20, 'al...  3.643784e+10   3.639705e+10
+16               ARDRegression  {'tol': 1e-05, 'lambda_2': 1e-06, 'lambda_1': ...  6.801474e+10   5.536636e+10
+17         ExtraTreesRegressor  {'n_estimators': 100, 'min_samples_split': 10,...  3.100765e+10   3.552226e+10
+18               BayesianRidge  {'tol': 0.001, 'lambda_2': 0.0001, 'lambda_1':...  6.529298e+10   5.544067e+10
+
+
+
+
