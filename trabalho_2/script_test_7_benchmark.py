@@ -121,11 +121,11 @@ model = ExtraTreesRegressor(random_state=42 ,n_estimators =  500, min_samples_sp
 # Definir o grid de hiperparâmetros
 param_grid = {
     'n_estimators': [100, 200, 500 , 800],
-    # 'max_features': ['auto', 'sqrt', 'log2'],
-    # 'max_depth': [None, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    # 'min_samples_split': [2, 5, 10, 15, 20],
-    # 'min_samples_leaf': [1, 2, 4, 6, 8],
-    # 'bootstrap': [False, True]
+    'max_features': ['auto', 'sqrt', 'log2'],
+    'max_depth': [None, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    'min_samples_split': [2, 5, 10, 15, 20],
+    'min_samples_leaf': [1, 2, 4, 6, 8],
+    'bootstrap': [False, True]
 }
 
 # Configurar o GridSearchCV

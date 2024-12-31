@@ -147,8 +147,10 @@ model.fit(X_train_pca, y_train)
 # Prever e calcular o erro quadrático médio
 y_pred = model.predict(X_validate_pca_df)
 mse = mean_squared_error(y_validate, y_pred)
+rmse = np.sqrt(mse)
 
 print(f"Mean Squared Error: {mse}")
+print(f"Root Mean Squared Error: {rmse}")
 
 # Print some predictions
 for i in range(0,50):
@@ -180,7 +182,7 @@ y_test_pred = model.predict(X_test_pca)
 ## save predictions
 
 predictions_df = pd.DataFrame({ 'preco': y_test_pred , 'Id': df_test.index})  
-predictions_df.to_csv('predictions/ExtraTrees_tuned_predicted_prices_pca2_outliers1_1e-5_97e-2_outliers2_1e-5_9999e-4_allIds.csv', index=False)
+# predictions_df.to_csv('predictions/ExtraTrees_tuned_predicted_prices_pca2_outliers1_1e-5_97e-2_outliers2_1e-5_9999e-4_allIds.csv', index=False)
 
 
 # ----------------------------  ------------------------------------------------------------

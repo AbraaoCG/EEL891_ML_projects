@@ -29,6 +29,89 @@ Cross-validated Mean Squared Error: 37244290285.64232
 t1. 
 
 
+------------------------------------------------
+RMSE - CV MSE 
+
+script 5
+
+177187.21599303605 - 35572288780.21654
+
+script 9 ( ydf)
+1. 179230
+2. 
+
+
+script 10 (umap)
+207701.04219913244
+
+219573.10387662688 --> metric = hamming
+
+194778.78443085213 - 35696680456.349915( lda)
+
+
+script 12 (pca variations )
+
+
+ - 35572288780.21654 (INCREMENTAL PCA)
+
+177058.99304135083 - 35568469343.43925 (TruncatedSVD)
+
+
+ - 34449701227.72818 (ICA) 
+
+
+ novo script 9 ( variacao de quantils)
+
+
+['preco'] = [0.00001, 0.96]
+Root Mean Squared Error: 174846.35635574575
+Cross-validated Mean Squared Error: 29759803427.681133
+
+['preco'] = [0.00001, 0.96]
+['diferenciais'] = [0.00001, 0.97]
+Root Mean Squared Error: 164830.14981069218
+Cross-validated Mean Squared Error: 30730314796.101093
+
+['preco'] = [0.00001, 0.96]
+['diferenciais'] = [0.00001, 0.99]
+Root Mean Squared Error: 175613.65052791205
+Cross-validated Mean Squared Error: 30509479190.227337
+
+['preco'] = [0.00001, 0.96]
+['diferenciais'] = [0.001, 0.999] ----------------------------> custom2
+Root Mean Squared Error: 152858.76903768402
+Cross-validated Mean Squared Error: 31921333017.992622
+
+
+quantile_ranges['preco'] = [0.00001, 0.96]
+quantile_ranges['area_util'] = [0.00001, 0.98]
+Root Mean Squared Error: 168711.87997142324
+Cross-validated Mean Squared Error: 28363360469.873707 -----------> Custom1
+
+quantile_ranges['preco'] = [0.00001, 0.96]
+quantile_ranges['area_util'] = [0.00001, 0.999]
+Root Mean Squared Error: 172614.17196560832
+Cross-validated Mean Squared Error: 29357363309.52788
+
+
+umap
+quantile_ranges['preco'] = [0.0001, 0.96]
+quantile_ranges['diferenciais'] = [0.001, 0.999]
+Root Mean Squared Error: 163829.9494024481
+Root Mean Squared Percentage Error: 0.3037446038706865
+Cross-validated Mean Squared Error: 31350318367.278725
+
+pca 0.95 ;
+lowQ = 0.00001
+HighQ = 0.9999
+quantile_ranges['preco'] = [0.0001, 0.96]
+quantile_ranges['diferenciais'] = [0.001, 0.999]
+Root Mean Squared Error: 152858.76903768402
+Root Mean Squared Percentage Error: 0.2547203250294681
+Cross-validated Mean Squared Error: 31921333017.992622
+
+
+
 
 
 -----------------------------------------------
