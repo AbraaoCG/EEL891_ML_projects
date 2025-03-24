@@ -6,7 +6,7 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import ExtraTreesRegressor
-
+import umap
 
 # Carregar o dataframe
 df_train = pd.read_csv('dados_trab2/conjunto_de_treinamento.csv')
@@ -43,16 +43,43 @@ for column in df_test.select_dtypes(include=['object']).columns:
 # ----------------------------  ------------------------------------------------------------
 
 # Remover outliers
-quantile_low = df_train.quantile(0.00001)
-quantile_high = df_train.quantile(0.97)
+
+initHigh = 0.9999999 
+initLow = 0.00000001
+
+columns_to_check = ['preco', 'diferenciais', 'area_util']# df_train.columns.to_list()
+
+quantile_ranges = {col: [initLow,initHigh] for col in columns_to_check}
+
+
+
+
+quantile_ranges['preco'] = [0.0001, 0.96]
+quantile_ranges['diferenciais'] = [0.001, 0.999]
+# quantile_ranges['area_util'] = [0.001, 0.999]
+
+
+# quantile_low = df_train[columns_to_check].quantile(0.00001)
+# quantile_high = df_train[columns_to_check].quantile(0.97)
 
 print('Análise de Quantil -- Primeira redução de outliers')
-print(f'Low quantil: {quantile_low} ; High quantil: {quantile_high}')
+for column in columns_to_check: 
+    Q1 = df_train[column].quantile(quantile_ranges[column][0])
+    Q3 = df_train[column].quantile(quantile_ranges[column][1])
+    print(f'{column} - Low quantil 1: {Q1} ; High quantil 1: {Q3}')
+    df_train = df_train[(df_train[column] >= Q1) & (df_train[column] <= Q3)]
 
-for column in ['preco']:
-    df_train = df_train[(df_train[column] >= quantile_low[column]) & (df_train[column] <= quantile_high[column])]
 
-# ----------------------------  ------------------------------------------------------------
+# initialIdsCount = len(df_test)
+# # Filtrar df_test pelos quantis de outliers de treino
+# for column in ['area_util']:
+#     Q1 = df_train[column].quantile(quantile_ranges[column][0])
+#     Q3 = df_train[column].quantile(quantile_ranges[column][1])
+#     df_test = df_test[(df_test[column] >= Q1) & (df_test[column] <= Q3)]
+
+# finalidsCount = len(df_test)
+
+# print(f'Droped {initialIdsCount - finalidsCount} ids from test set')
 
 # Normalizar os dados 
 scaler = StandardScaler()
@@ -95,14 +122,14 @@ pca_df['preco'] = df_train['preco']
 # ----------------------------  ------------------------------------------------------------
 
 # Segunda camada de remoção de outliers (Dentro dos componentes principais)
-lowQ = 0.00001
-HighQ = 0.9999
+lowQ = 0.00001 # 0# 
+HighQ = 0.9999 # 1# 
 
 quantile_low = pca_df.quantile(lowQ)
 quantile_high = pca_df.quantile(HighQ)
 
-print('Análise de Quantil -- Segunda redução de outliers')
-print(f'Low quantil: {quantile_low} ; High quantil: {quantile_high}')
+# print('Análise de Quantil -- Segunda redução de outliers')
+# print(f'Low quantil 2: \n {quantile_low} ; High quantil 2: \n {quantile_high}')
 
 
 if(lowQ == 0 and HighQ == 1):
@@ -139,23 +166,30 @@ print(f"Number of components: {X_pca_df.shape[1]}")
 # Treinar modelo
 
 # model = RandomForestRegressor(random_state=42,  n_estimators = 200, max_depth = 30, min_samples_split = 2,min_samples_leaf = 1)
-model = ExtraTreesRegressor(random_state=42 ,n_estimators =  500, min_samples_split = 10, min_samples_leaf =  2, max_depth =  20)
+
+model = ExtraTreesRegressor(random_state=42 ,n_estimators =  100, min_samples_split = 4, min_samples_leaf =  5, max_depth =  40)
 
 
 model.fit(X_train_pca, y_train)
-
 # Prever e calcular o erro quadrático médio
 y_pred = model.predict(X_validate_pca_df)
 mse = mean_squared_error(y_validate, y_pred)
 rmse = np.sqrt(mse)
 
+# Calcular o erro percentual quadrático médio da raiz (RMSPE)
+def rmspe(y_true, y_pred):
+    return np.sqrt(np.mean(np.square((y_true - y_pred) / y_true)))
+
+rmspe_value = rmspe(y_validate, y_pred)
+
 print(f"Mean Squared Error: {mse}")
 print(f"Root Mean Squared Error: {rmse}")
+print(f"Root Mean Squared Percentage Error: {rmspe_value}")
 
-# Print some predictions
-for i in range(0,50):
-    # idx = np.random.randint(0, len(y_validate))
-    print(f'Preço real: {y_validate.values[i]}, Preço previsto: {y_pred[i]}')
+# # Print some predictions
+# for i in range(0,50):
+#     # idx = np.random.randint(0, len(y_validate))
+#     print(f'Preço real: {y_validate.values[i]}, Preço previsto: {y_pred[i]}')
 
 
 
@@ -182,7 +216,7 @@ y_test_pred = model.predict(X_test_pca)
 ## save predictions
 
 predictions_df = pd.DataFrame({ 'preco': y_test_pred , 'Id': df_test.index})  
-# predictions_df.to_csv('predictions/ExtraTrees_tuned_predicted_prices_pca2_outliers1_1e-5_97e-2_outliers2_1e-5_9999e-4_allIds.csv', index=False)
+# predictions_df.to_csv('predictions/ExtraTrees_tuned2_predicted_prices_pca2_outliers1_custom1_outliers2_1e-5_9999e-4_filteredIds1.csv', index=False)
 
 
 # ----------------------------  ------------------------------------------------------------
@@ -202,7 +236,7 @@ y_lim = (min(X_train_pca_df[var2].min(), X_validate_pca_df[var2].min(), X_test_p
          max(X_train_pca_df[var2].max(), X_validate_pca_df[var2].max(), X_test_pca_df[var2].max()))
 
 # Aplicar os limites aos gráficos
-for ax in axes.flatten():
+for ax in axes.flatten()[:-1]:  # Exclude the last subplot (axes[1][1])
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
 
@@ -210,7 +244,7 @@ for ax in axes.flatten():
 scatter1 = axes[0][0].scatter(X_train_pca_df[var1], X_train_pca_df[var2], c=y_train, cmap='viridis', alpha=0.5)
 axes[0][0].set_xlabel(var1)
 axes[0][0].set_ylabel(var2)
-axes[0][0].set_title('Gráfico de ' + var1 + ' vs ' + var2 + ' com hue = Y')
+axes[0][0].set_title('Gráfico de ' + var1 + ' vs ' + var2 + ' com hue = Preço')
 fig.colorbar(scatter1, ax=axes[0][0], label='Preço')
 
 # Gráfico de var1 vs var2 com hue = Erro (y_validate - y_pred)
@@ -220,12 +254,27 @@ axes[0][1].set_ylabel(var2)
 axes[0][1].set_title('Gráfico de ' + var1 + ' vs ' + var2 + ' com hue = Erro (y_validate - y_pred)')
 fig.colorbar(scatter2, ax=axes[0][1], label='Erro')
 
+# # Gráfico de var1 vs var2 com hue = Erro (y_validate - y_pred)
+# scatter2 = axes[0][1].scatter(y_validate, y_pred, c=residuals, cmap='coolwarm', alpha=0.5)
+# axes[0][1].set_xlabel(var1)
+# axes[0][1].set_ylabel(var2)
+# axes[0][1].set_title('Gráfico de y_validate vs y_pred com hue = Erro (y_validate - y_pred)')
+# fig.colorbar(scatter2, ax=axes[0][1], label='Erro')
+
 # Gráfico de var1 vs var2 para X_test_pca_df
 scatter3 = axes[1][0].scatter(X_test_pca_df[var1], X_test_pca_df[var2], c=y_test_pred, cmap='viridis', alpha=0.5)
 axes[1][0].set_xlabel(var1)
 axes[1][0].set_ylabel(var2)
 axes[1][0].set_title('Gráfico de ' + var1 + ' vs ' + var2 + ' para X_test_pca_df')
 fig.colorbar(scatter3, ax=axes[1][0], label='Preço')
+
+
+# Plotar o erro para cada aquisição no teste
+axes[1][1].scatter(X_validate_pca_df[var1], residuals, alpha=0.5)
+axes[1][1].axhline(y=0, color='r', linestyle='--')
+axes[1][1].set_title('Erro para cada aquisição no teste (ExtraTrees)')
+axes[1][1].set_xlabel('Índice')
+axes[1][1].set_ylabel('Erro (Real - Previsto)')
 
 
 

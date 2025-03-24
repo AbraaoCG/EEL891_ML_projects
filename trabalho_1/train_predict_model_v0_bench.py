@@ -118,72 +118,57 @@ from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import cross_val_score
+from scipy.stats import randint, uniform
+from sklearn.model_selection import RandomizedSearchCV
 
 X_blc, y_blc = SMOTE().fit_resample(X_train_scaled, y_train)
 # xgb = XGBClassifier()
 
-bestXgbModel = XGBClassifier(base_score=None, booster=None, callbacks=None,
-              colsample_bylevel=None, colsample_bynode=None,
-              colsample_bytree=None, device=None, early_stopping_rounds=None,
-              enable_categorical=False, eval_metric=None, feature_types=None,
-              gamma=None, grow_policy=None, importance_type=None,
-              interaction_constraints=None, learning_rate=0.01, max_bin=None,
-              max_cat_threshold=None, max_cat_to_onehot=None,
-              max_delta_step=None, max_depth=4, max_leaves=None,
-              min_child_weight=None, monotone_constraints=None,
-              multi_strategy=None, n_estimators=850, n_jobs=None,
-              num_parallel_tree=None, random_state=None)
+param_dist = {
+    'n_estimators': randint(100, 1000),
+    'learning_rate': uniform(0.01, 0.3),
+    'max_depth': randint(3, 10),
+    'min_child_weight': randint(1, 10),
+    'gamma': uniform(0, 0.5),
+    'subsample': uniform(0.5, 1),
+    'colsample_bytree': uniform(0.5, 1)
+}
 
+# Inicializar o modelo XGBoost
+xgb = XGBClassifier()
 
-bestXgbModel.fit(X_blc, y_blc)
+# Configurar o RandomizedSearchCV
+random_search = RandomizedSearchCV(
+    estimator=xgb,
+    param_distributions=param_dist,
+    n_iter=100,
+    scoring='accuracy',
+    cv=5,
+    verbose=1,
+    random_state=42,
+    n_jobs=-1
+)
 
-y_pred = bestXgbModel.predict(X_validate_scaled)
+# Ajustar o RandomizedSearchCV aos dados balanceados
+random_search.fit(X_blc, y_blc)
+
+# Melhor modelo encontrado pelo RandomizedSearchCV
+best_xgb_model = random_search.best_estimator_
+# Imprimir os parâmetros ótimos encontrados pelo RandomizedSearchCV
+print("Best parameters found: ", random_search.best_params_)
+
+best_xgb_model.fit(X_blc, y_blc)
+
+y_pred = best_xgb_model.predict(X_validate_scaled)
 
 get_confusion_matrix(y_validate,y_pred)
 
 # Perform cross-validation
-cv_scores = cross_val_score(bestXgbModel, X_blc, y_blc, cv=5, scoring='accuracy')
+cv_scores = cross_val_score(best_xgb_model, X_blc, y_blc, cv=5, scoring='accuracy')
 
 # Print the cross-validation scores
 print("Cross-validation scores: ", cv_scores)
 print("Mean cross-validation score: ", np.mean(cv_scores))
 
-
-
-# test data
-
-# Refit the model using the entire dataset
-X_full = usingData.drop('inadimplente', axis=1)
-y_full = usingData['inadimplente']
-
-# Scale the full dataset
-X_full_scaled = scaler.fit_transform(X_full)
-
-# Balance the full dataset using SMOTE
-X_full_blc, y_full_blc = SMOTE().fit_resample(X_full_scaled, y_full)
-
-# Refit the model
-bestXgbModel.fit(X_full_blc, y_full_blc)
-
-X_test = usingTestData
-
-# Scale the test data
-X_test_scaled = scaler.transform(X_test)
-
-# Predict using the trained model
-y_test_pred = bestXgbModel.predict(X_test_scaled)
-
-# Add predictions to the test dataframe with the original 'id_solicitante' column
-df_test['inadimplente_pred'] = y_test_pred
-df_test['id_solicitante'] = testIDs
-
-# Create a new dataframe with 'id_solicitante' and 'inadimplente_pred'
-df_predictions = df_test[['id_solicitante', 'inadimplente_pred']]
-
-# Rename the columns to match the required header
-df_predictions.columns = ['id_solicitante', 'inadimplente']
-
-# # Save the predictions to a CSV file
-# df_predictions.to_csv('predictions7.csv', index=False)
 
 

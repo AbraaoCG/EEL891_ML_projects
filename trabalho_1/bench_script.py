@@ -6,6 +6,8 @@ import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
 
+
+
 def get_confusion_matrix(y_validate,y_pred):
     from sklearn.metrics import confusion_matrix
     conf_matrix = confusion_matrix(y_validate, y_pred)
@@ -118,72 +120,90 @@ from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import RandomizedSearchCV
 
 X_blc, y_blc = SMOTE().fit_resample(X_train_scaled, y_train)
-# xgb = XGBClassifier()
+xgb = XGBClassifier()
 
-bestXgbModel = XGBClassifier(base_score=None, booster=None, callbacks=None,
-              colsample_bylevel=None, colsample_bynode=None,
-              colsample_bytree=None, device=None, early_stopping_rounds=None,
-              enable_categorical=False, eval_metric=None, feature_types=None,
-              gamma=None, grow_policy=None, importance_type=None,
-              interaction_constraints=None, learning_rate=0.01, max_bin=None,
-              max_cat_threshold=None, max_cat_to_onehot=None,
-              max_delta_step=None, max_depth=4, max_leaves=None,
-              min_child_weight=None, monotone_constraints=None,
-              multi_strategy=None, n_estimators=850, n_jobs=None,
-              num_parallel_tree=None, random_state=None)
+# Definir os grids de parâmetros para múltiplos modelos de classificação
+param_grids = {
+    'XGBClassifier': {
+        'n_estimators': [100, 200, 500],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'max_depth': [3, 5, 7, 10]
+    },
+    'RandomForestClassifier': {
+        'n_estimators': [100, 200, 500],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    'LogisticRegression': {
+        'C': [0.01, 0.1, 1.0, 10.0],
+        'penalty': ['l1', 'l2', 'elasticnet', 'none'],
+        'solver': ['lbfgs', 'saga']
+    },
+    'SVC': {
+        'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
+        'C': [0.1, 1, 10, 100],
+        'gamma': ['scale', 'auto']
+    },
+    'GradientBoostingClassifier': {
+        'n_estimators': [100, 200, 500],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'max_depth': [3, 5, 7, 10]
+    },
+    'AdaBoostClassifier': {
+        'n_estimators': [50, 100, 200],
+        'learning_rate': [0.01, 0.1, 1.0]
+    },
+    'KNeighborsClassifier': {
+        'n_neighbors': [3, 5, 7, 9],
+        'weights': ['uniform', 'distance'],
+        'metric': ['euclidean', 'manhattan']
+    },
+    'GaussianNB': {}
+}
 
+# Inicializar os modelos
+models = {
+    'XGBClassifier': XGBClassifier(random_state=42),
+    'RandomForestClassifier': RandomForestClassifier(random_state=42),
+    # 'LogisticRegression': LogisticRegression(random_state=42, max_iter=1000),
+    # 'SVC': SVC(random_state=42),
+    # 'GradientBoostingClassifier': GradientBoostingClassifier(random_state=42),
+    # 'AdaBoostClassifier': AdaBoostClassifier(random_state=42),
+    # 'KNeighborsClassifier': KNeighborsClassifier(),
+    # 'GaussianNB': GaussianNB()
+}
 
-bestXgbModel.fit(X_blc, y_blc)
+# DataFrame para armazenar os resultados
+results_df = pd.DataFrame(columns=['Model', 'Best_Params', 'Accuracy', 'Cross_Val_Accuracy'])
 
-y_pred = bestXgbModel.predict(X_validate_scaled)
+# Realizar GridSearchCV para cada modelo
+for model_name in models:
+    model = models[model_name]
+    param_grid = param_grids[model_name]
+    
+    grid_search = RandomizedSearchCV(model, param_grid, scoring='accuracy', cv=5, n_jobs=-1, n_iter=50, random_state=42)
+    grid_search.fit(X_blc, y_blc)
+    
+    best_model = grid_search.best_estimator_
+    best_params = grid_search.best_params_
+    y_pred = best_model.predict(X_validate_scaled)
+    accuracy = (y_pred == y_validate).mean()
+    cross_val_accuracy = cross_val_score(best_model, X_blc, y_blc, scoring='accuracy', cv=5).mean()
+    
+    results_df = pd.concat([results_df, pd.DataFrame([{
+        'Model': model_name,
+        'Best_Params': best_params,
+        'Accuracy': accuracy,
+        'Cross_Val_Accuracy': cross_val_accuracy
+    }])], ignore_index=True)
 
-get_confusion_matrix(y_validate,y_pred)
-
-# Perform cross-validation
-cv_scores = cross_val_score(bestXgbModel, X_blc, y_blc, cv=5, scoring='accuracy')
-
-# Print the cross-validation scores
-print("Cross-validation scores: ", cv_scores)
-print("Mean cross-validation score: ", np.mean(cv_scores))
-
-
-
-# test data
-
-# Refit the model using the entire dataset
-X_full = usingData.drop('inadimplente', axis=1)
-y_full = usingData['inadimplente']
-
-# Scale the full dataset
-X_full_scaled = scaler.fit_transform(X_full)
-
-# Balance the full dataset using SMOTE
-X_full_blc, y_full_blc = SMOTE().fit_resample(X_full_scaled, y_full)
-
-# Refit the model
-bestXgbModel.fit(X_full_blc, y_full_blc)
-
-X_test = usingTestData
-
-# Scale the test data
-X_test_scaled = scaler.transform(X_test)
-
-# Predict using the trained model
-y_test_pred = bestXgbModel.predict(X_test_scaled)
-
-# Add predictions to the test dataframe with the original 'id_solicitante' column
-df_test['inadimplente_pred'] = y_test_pred
-df_test['id_solicitante'] = testIDs
-
-# Create a new dataframe with 'id_solicitante' and 'inadimplente_pred'
-df_predictions = df_test[['id_solicitante', 'inadimplente_pred']]
-
-# Rename the columns to match the required header
-df_predictions.columns = ['id_solicitante', 'inadimplente']
-
-# # Save the predictions to a CSV file
-# df_predictions.to_csv('predictions7.csv', index=False)
-
-
+print(results_df)
